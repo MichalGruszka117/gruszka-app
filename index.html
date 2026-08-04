@@ -59,6 +59,11 @@
     <symbol id="icon-back" viewBox="0 0 24 24">
       <path d="M15 4l-8 8 8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
+    <symbol id="icon-speaker" viewBox="0 0 24 24">
+      <path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4a1 1 0 01-1-1v-3a1 1 0 011-1z"/>
+      <path d="M15.5 9.2a4 4 0 010 5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M18.3 6.6a7.8 7.8 0 010 10.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
   </defs>
 </svg>
 
@@ -75,7 +80,7 @@
     <div class="chapter-card">
       <div class="chapter-card__label">Rozdział 1</div>
       <h1 class="chapter-card__title">Podstawy</h1>
-      <p class="chapter-card__subtitle">1430 najważniejszych słówek · 30 lekcji</p>
+      <p class="chapter-card__subtitle" id="chapter-subtitle">1430 najważniejszych słówek</p>
       <div class="chapter-card__progress">
         <div class="chapter-card__progress-bar"><div id="chapter-progress-fill" class="chapter-card__progress-fill"></div></div>
         <span id="chapter-progress-text">0 / 30</span>
@@ -114,7 +119,18 @@
       <div class="flashcard" id="flashcard">
         <div class="flashcard__inner" id="flashcard-inner">
           <div class="flashcard__face flashcard__face--front">
-            <span class="flashcard__word" id="flash-en">word</span>
+            <div class="flashcard__stack">
+              <div class="wordrow">
+                <span class="flashcard__word" id="flash-en">word</span>
+                <button class="speakbtn" id="btn-flash-speak" type="button" aria-label="Posłuchaj wymowy">
+                  <svg class="ic"><use href="#icon-speaker"/></svg>
+                </button>
+              </div>
+              <div class="phon">
+                <span class="phon__pol" id="flash-fon"></span>
+                <span class="phon__ipa" id="flash-ipa"></span>
+              </div>
+            </div>
           </div>
           <div class="flashcard__face flashcard__face--back">
             <span class="flashcard__word" id="flash-pl">słowo</span>
@@ -137,7 +153,18 @@
     </header>
     <div class="quiz-wrap">
       <p class="quiz-question-label" id="quiz-direction">Przetłumacz słowo:</p>
-      <h2 class="quiz-question" id="quiz-question">word</h2>
+      <div class="quiz-prompt">
+        <div class="wordrow">
+          <h2 class="quiz-question" id="quiz-question">word</h2>
+          <button class="speakbtn speakbtn--sm" id="btn-quiz-speak" type="button" hidden aria-label="Posłuchaj wymowy">
+            <svg class="ic"><use href="#icon-speaker"/></svg>
+          </button>
+        </div>
+        <div class="phon phon--quiz" id="quiz-phon" hidden>
+          <span class="phon__pol" id="quiz-fon"></span>
+          <span class="phon__ipa" id="quiz-ipa"></span>
+        </div>
+      </div>
       <div class="quiz-options" id="quiz-options"></div>
     </div>
     <div class="quiz-footer" id="quiz-footer">
@@ -210,6 +237,20 @@
           <span class="profile__label">lekcji ukończonych</span>
         </div>
       </div>
+      <section class="legend">
+        <h2 class="legend__title">Jak czytać wymowę</h2>
+        <p class="legend__lead">Pod każdym słówkiem są dwa zapisy: <b>polski</b> (czytaj jak po polsku, WIELKIE LITERY to akcentowana sylaba) i <span class="legend__ipa">międzynarodowy IPA</span>, którego używają wszystkie słowniki.</p>
+        <dl class="legend__list">
+          <div><dt>th</dt><dd>język między zębami, bezdźwięcznie — <i>three</i> = „thri”</dd></div>
+          <div><dt>dh</dt><dd>to samo, ale na głos — <i>mother</i> = „MA-dher”</dd></div>
+          <div><dt>ł</dt><dd>angielskie <i>w</i> — <i>water</i> = „ŁO-ter”</dd></div>
+          <div><dt>w</dt><dd>angielskie <i>v</i> — <i>very</i> = „WE-ri”</dd></div>
+          <div><dt>y</dt><dd>krótkie <i>i</i> — <i>sit</i> = „syt”</dd></div>
+          <div><dt>e</dt><dd>w sylabie nieakcentowanej: leniwe „y/e” (IPA <span class="legend__ipa">ə</span>)</dd></div>
+        </dl>
+        <p class="legend__foot">Polski zapis to przybliżenie — kilku angielskich głosek nie da się oddać dokładnie. Kliknij 🔊 przy słówku, żeby usłyszeć oryginał.</p>
+      </section>
+
       <button class="btn btn--outline btn--block" id="btn-reset">Zresetuj postęp</button>
       <p class="profile__note">Rozdział 2 pojawi się w kolejnej aktualizacji.</p>
     </div>

@@ -3,6 +3,7 @@
   "use strict";
 
   const STORAGE_KEY = "gruszka_state_v1";
+  const DATA_VERSION = 2;          // v2 = lekcje podzielone na porcje ~15 słówek + transkrypcje
   const MAX_HEARTS = 5;
   const HEART_REGEN_HOURS = 4;
   const QUIZ_LEN = 10;
@@ -31,12 +32,36 @@
   function loadState(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return defaultState();
-      const parsed = JSON.parse(raw);
-      return Object.assign(defaultState(), parsed);
+      if(!raw){
+        const fresh = defaultState();
+        fresh.dataVersion = DATA_VERSION;
+        return fresh;
+      }
+      return migrate(Object.assign(defaultState(), JSON.parse(raw)));
     }catch(e){
       return defaultState();
     }
+  }
+
+  /* Podział lekcji zmienił ich numery (30 tematów -> 101 porcji).
+     Stary postęp był zapisany pod numerem tematu — przepisujemy go na wszystkie
+     porcje tego tematu, żeby użytkownik nie stracił gwiazdek. XP/serca/seria bez zmian. */
+  function migrate(s){
+    if(s.dataVersion === DATA_VERSION) return s;
+    const old = s.lessons || {};
+    if(Object.keys(old).length){
+      const remapped = {};
+      LESSONS.forEach(l => {
+        const prev = old[l.theme];
+        if(prev && prev.stars > 0){
+          remapped[l.id] = { stars: prev.stars, bestCorrect: 0, total: 0 };
+        }
+      });
+      s.lessons = remapped;
+    }
+    s.dataVersion = DATA_VERSION;
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){}
+    return s;
   }
 
   function saveState(){
@@ -102,6 +127,9 @@
     regenHearts();
     renderTopStats();
 
+    document.getElementById("chapter-subtitle").textContent =
+      `${ALL_WORDS.length} najważniejszych słówek · ${LESSONS.length} lekcji`;
+
     const completedCount = LESSONS.filter(l => lessonProgress(l.id).stars >= 1).length;
     document.getElementById("chapter-progress-text").textContent = `${completedCount} / ${LESSONS.length}`;
     document.getElementById("chapter-progress-fill").style.width = `${(completedCount / LESSONS.length) * 100}%`;
@@ -147,13 +175,60 @@
     currentLessonId = lessonId;
     const lesson = LESSON_BY_ID[lessonId];
     document.getElementById("intro-eyebrow").textContent = `Lekcja ${lesson.id} z ${LESSONS.length}`;
-    document.getElementById("intro-title").textContent = lesson.title.replace(/\s*\(.+?\)\s*$/, "");
+    const theme = lesson.title.replace(/\s*\(.+?\)\s*$/, "");
+    document.getElementById("intro-title").textContent =
+      lesson.partCount > 1 ? `${theme} · ${lesson.part}/${lesson.partCount}` : theme;
     document.getElementById("intro-desc").textContent = `Poznasz ${lesson.words.length} słówek. Najpierw fiszki, potem krótki quiz.`;
     showScreen("screen-intro");
   }
 
   document.getElementById("btn-intro-back").addEventListener("click", () => { renderHome(); showScreen("screen-home"); });
   document.getElementById("btn-start-lesson").addEventListener("click", () => startFlashcards(currentLessonId));
+
+  /* ---------- WYMOWA (Web Speech API) ---------- */
+  const canSpeak = typeof window.speechSynthesis !== "undefined"
+                && typeof window.SpeechSynthesisUtterance !== "undefined";
+  let enVoice = null;
+
+  function pickVoice(){
+    if(!canSpeak) return;
+    const en = (speechSynthesis.getVoices() || []).filter(v => /^en[-_]/i.test(v.lang || ""));
+    // CMUdict to wymowa amerykańska — preferujemy głos en-US, ale bierzemy każdy angielski
+    enVoice = en.find(v => /^en[-_]US/i.test(v.lang)) || en[0] || null;
+  }
+
+  if(canSpeak){
+    pickVoice();
+    // lista głosów ładuje się asynchronicznie — trzeba poczekać na zdarzenie
+    if(typeof speechSynthesis.addEventListener === "function"){
+      speechSynthesis.addEventListener("voiceschanged", pickVoice);
+    } else {
+      speechSynthesis.onvoiceschanged = pickVoice;
+    }
+  }
+
+  function speak(text, btn){
+    if(!canSpeak || !text) return;
+    try{
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      if(enVoice) u.voice = enVoice;
+      u.lang = (enVoice && enVoice.lang) || "en-US";
+      u.rate = 0.85;                       // wolniej — łatwiej wyłapać głoski
+      if(btn){
+        const off = () => btn.classList.remove("is-speaking");
+        btn.classList.add("is-speaking");
+        u.onend = off;
+        u.onerror = off;
+        setTimeout(off, 5000);             // bezpiecznik, gdyby onend nie przyszło
+      }
+      speechSynthesis.speak(u);
+    }catch(e){}
+  }
+
+  if(!canSpeak){
+    document.querySelectorAll(".speakbtn").forEach(b => b.hidden = true);
+  }
 
   /* ---------- FISZKI ---------- */
   let flashWords = [];
@@ -173,6 +248,8 @@
     const w = flashWords[flashIndex];
     document.getElementById("flash-en").textContent = w.en;
     document.getElementById("flash-pl").textContent = w.pl;
+    document.getElementById("flash-fon").textContent = w.fon || "";
+    document.getElementById("flash-ipa").textContent = w.ipa ? "/" + w.ipa + "/" : "";
     document.getElementById("flash-progress").style.width = `${((flashIndex) / flashWords.length) * 100}%`;
     document.getElementById("btn-flash-prev").style.visibility = flashIndex === 0 ? "hidden" : "visible";
     document.getElementById("btn-flash-next").textContent = (flashIndex === flashWords.length - 1) ? "Do quizu" : "Dalej";
@@ -180,6 +257,11 @@
 
   document.getElementById("flashcard").addEventListener("click", () => {
     document.getElementById("flashcard").classList.toggle("is-flipped");
+  });
+  document.getElementById("btn-flash-speak").addEventListener("click", (e) => {
+    e.stopPropagation();               // nie obracaj karty przy kliknięciu w głośnik
+    const w = flashWords[flashIndex];
+    if(w) speak(w.en, e.currentTarget);
   });
   document.getElementById("btn-flash-next").addEventListener("click", () => {
     if(flashIndex < flashWords.length - 1){
@@ -231,7 +313,10 @@
         prompt: direction === "en2pl" ? w.en : w.pl,
         direction,
         correctText,
-        options
+        options,
+        en: w.en,
+        ipa: w.ipa,
+        fon: w.fon
       };
     });
   }
@@ -252,6 +337,14 @@
     document.getElementById("quiz-direction").textContent =
       q.direction === "en2pl" ? "Przetłumacz na polski:" : "Przetłumacz na angielski:";
     document.getElementById("quiz-question").textContent = q.prompt;
+
+    // wymowa tylko przy pytaniach po angielsku — przy polskich nie ma czego czytać
+    const showPhon = q.direction === "en2pl";
+    document.getElementById("quiz-fon").textContent = showPhon ? (q.fon || "") : "";
+    document.getElementById("quiz-ipa").textContent = (showPhon && q.ipa) ? "/" + q.ipa + "/" : "";
+    document.getElementById("quiz-phon").hidden = !showPhon;
+    document.getElementById("btn-quiz-speak").hidden = !(showPhon && canSpeak);
+
     document.getElementById("quiz-progress").style.width = `${(quizIndex / quizQuestions.length) * 100}%`;
     document.getElementById("quiz-hearts-count").textContent = state.hearts;
 
@@ -327,6 +420,11 @@
     } else {
       finishQuiz();
     }
+  });
+
+  document.getElementById("btn-quiz-speak").addEventListener("click", (e) => {
+    const q = quizQuestions[quizIndex];
+    if(q) speak(q.en, e.currentTarget);
   });
 
   document.getElementById("btn-quiz-close").addEventListener("click", () => { renderHome(); showScreen("screen-home"); });

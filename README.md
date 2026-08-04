@@ -2,7 +2,9 @@
 
 Aplikacja webowa (PWA) w stylu Duolingo — instaluje się na telefonie jak zwykła appka (ikona na ekranie głównym, działa offline), ale bez sklepu App Store / Google Play. To jeden kod, który działa identycznie na Androidzie i iOS.
 
-**Rozdział 1 „Podstawy"** — 1430 słówek w 30 tematycznych lekcjach (fiszki + quiz), system serii (streak), punkty XP, serca.
+**Rozdział 1 „Podstawy"** — 1430 słówek w 101 lekcjach po ~15 słówek (fiszki + quiz), system serii (streak), punkty XP, serca.
+
+Każde słówko ma **zapis wymowy w dwóch wersjach** — uproszczony polski (`ŁO-ter`, wielkie litery = akcent) i międzynarodowy IPA (`/ˈwɔːtər/`) — oraz **przycisk 🔊**, który wymawia słowo na głos.
 
 ## Jak to uruchomić
 
@@ -36,12 +38,27 @@ Od teraz appka ma swoją ikonę na ekranie głównym i otwiera się na pełnym e
 ```
 index.html          – szkielet aplikacji, wszystkie ekrany
 style.css            – cały design (motyw zielono-gruszkowy)
-app.js               – logika: postęp, fiszki, quizy, serca, XP, streak
-data.js              – dane: 30 lekcji, 1430 par słówek (EN–PL)
+app.js               – logika: postęp, fiszki, quizy, serca, XP, streak, wymowa
+data.js              – dane: 101 lekcji, 1430 słówek (EN–PL + wymowa)
 manifest.json        – konfiguracja PWA (nazwa, ikony, kolory)
 service-worker.js    – działanie offline
 icons/               – ikony aplikacji
 ```
+
+## Wymowa
+
+**Zapis fonetyczny** wygenerowany automatycznie z [CMU Pronouncing Dictionary](https://github.com/cmusphinx/cmudict)
+(słownik wymowy amerykańskiej z Carnegie Mellon, domena publiczna). Pokrycie: 1288 z 1290 słów —
+`godparents` i `pyjamas` uzupełnione ręcznie. Każde hasło ma dwa pola:
+
+- `ipa` — standardowa transkrypcja, np. `ˈwɔːtər`
+- `fon` — uproszczony zapis polski, np. `ŁO-ter` (WIELKIE LITERY = sylaba akcentowana)
+
+Legenda znaków (`th`, `dh`, `ł`, `w`, `y`) jest w aplikacji na ekranie **Statystyki**.
+
+**Dźwięk** korzysta z `speechSynthesis` (Web Speech API) — wbudowanego w telefon syntezatora mowy.
+Nie wymaga plików audio ani internetu, obsłuży też przyszłe rozdziały bez dogrywania czegokolwiek.
+Jeśli urządzenie nie ma tego API, przyciski 🔊 same się ukrywają.
 
 ## Jak dodać Rozdział 2 (na przyszłość)
 

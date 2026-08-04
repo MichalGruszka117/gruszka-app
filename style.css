@@ -28,6 +28,7 @@
 }
 
 *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+[hidden]{ display:none !important; }   /* inaczej display:flex wygrywa z atrybutem hidden */
 html,body{height:100%;}
 body{
   margin:0;
@@ -216,13 +217,38 @@ body{
 .flashcard__face--back{ background: var(--green-500); transform: rotateY(180deg); }
 .flashcard__face--back .flashcard__word{ color: var(--white); }
 .flashcard__word{ font-family: var(--font-display); font-size:32px; font-weight:700; color: var(--ink-900); word-break: break-word; }
+.flashcard__stack{ display:flex; flex-direction:column; align-items:center; gap:12px; width:100%; }
 .flash-actions{ display:flex; gap:12px; width:100%; max-width:340px; }
 .flash-actions .btn{ flex:1; }
+
+/* ============ WYMOWA (fonetyka + głośnik) ============ */
+.wordrow{ display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; }
+.speakbtn{
+  flex:none; width:40px; height:40px; border-radius:50%; cursor:pointer;
+  border:2px solid var(--green-100); background: var(--white); color: var(--green-600);
+  display:flex; align-items:center; justify-content:center; padding:0;
+  transition: transform .08s ease, background .12s ease;
+}
+.speakbtn .ic{ width:22px; height:22px; }
+.speakbtn:active{ transform: scale(.9); background: var(--green-100); }
+.speakbtn.is-speaking{ background: var(--green-500); border-color: var(--green-500); color: var(--white); }
+.speakbtn--sm{ width:34px; height:34px; }
+.speakbtn--sm .ic{ width:18px; height:18px; }
+
+.phon{ display:flex; flex-direction:column; align-items:center; gap:2px; line-height:1.3; }
+.phon__pol{
+  font-family: var(--font-body); font-weight:800; font-size:15px;
+  color: var(--green-700); letter-spacing:.01em; word-break:break-word;
+}
+.phon__ipa{ font-family: var(--font-body); font-size:13px; color: var(--ink-400); word-break:break-word; }
+.phon--quiz{ align-items:flex-start; margin-top:6px; }
 
 /* ============ QUIZ ============ */
 .quiz-wrap{ flex:1; padding: 18px 22px 10px; display:flex; flex-direction:column; }
 .quiz-question-label{ color: var(--ink-400); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.05em; margin:0 0 6px; }
-.quiz-question{ font-family: var(--font-display); font-size:28px; margin: 0 0 22px; }
+.quiz-question{ font-family: var(--font-display); font-size:28px; margin:0; }
+.quiz-prompt{ margin: 0 0 22px; }
+.quiz-prompt .wordrow{ justify-content:flex-start; }
 .quiz-options{ display:flex; flex-direction:column; gap:12px; }
 .quiz-option{
   text-align:left; font-family: var(--font-body); font-weight:700; font-size:16px;
@@ -280,6 +306,25 @@ body{
 .profile__num{ font-family: var(--font-display); font-size:24px; font-weight:800; }
 .profile__label{ font-size:12.5px; color: var(--ink-600); }
 .profile__note{ text-align:center; color: var(--ink-400); font-size:13px; margin-top:16px; }
+
+/* ============ LEGENDA WYMOWY ============ */
+.legend{
+  background: var(--white); border:2px solid var(--pear-100); border-radius: var(--radius-l);
+  padding:18px 18px 16px; margin-bottom:18px; box-shadow: var(--shadow-card);
+}
+.legend__title{ font-family: var(--font-display); font-size:18px; font-weight:700; margin:0 0 8px; }
+.legend__lead{ font-size:13px; line-height:1.55; color: var(--ink-600); margin:0 0 14px; }
+.legend__ipa{ color: var(--ink-400); font-weight:700; }
+.legend__list{ margin:0; display:flex; flex-direction:column; gap:8px; }
+.legend__list > div{ display:flex; align-items:baseline; gap:12px; }
+.legend__list dt{
+  flex:none; min-width:38px; text-align:center; font-family: var(--font-body); font-weight:800;
+  font-size:15px; color: var(--green-700); background: var(--green-100);
+  border-radius:8px; padding:3px 8px;
+}
+.legend__list dd{ margin:0; font-size:13px; line-height:1.45; color: var(--ink-600); }
+.legend__list i{ color: var(--ink-900); font-style:italic; }
+.legend__foot{ font-size:12px; line-height:1.5; color: var(--ink-400); margin:14px 0 0; }
 
 /* ============ TABBAR ============ */
 .tabbar{
