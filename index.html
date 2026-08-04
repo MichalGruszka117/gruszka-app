@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Gruszka — Nauka Angielskiego</title>
+<meta name="description" content="Ucz się angielskiego w krótkich lekcjach i quizach.">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7CB518">
+<link rel="icon" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gruszka">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Definicje SVG (gruszka jako symbol, wielokrotnego użytku) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="icon-pear" viewBox="0 0 100 120">
+      <path d="M50,8 C57,8 61,15 58,23 C76,30 90,52 90,76 C90,101 71,118 50,118 C29,118 10,101 10,76 C10,52 24,30 42,23 C39,15 43,8 50,8 Z"/>
+    </symbol>
+    <symbol id="icon-flame" viewBox="0 0 24 24">
+      <path d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654a1 1 0 00-1.635-.771A6.981 6.981 0 003 11a9 9 0 1015.3-6.4 3.001 3.001 0 01-4.02-.79 3.032 3.032 0 01-.885-1.257z"/>
+    </symbol>
+    <symbol id="icon-gem" viewBox="0 0 24 24">
+      <path d="M6 3h12l4 6-10 12L2 9z"/>
+    </symbol>
+    <symbol id="icon-heart" viewBox="0 0 24 24">
+      <path d="M12 21s-7.5-4.6-10-9.3C.4 8 2 4 6 4c2.2 0 3.8 1.2 6 4 2.2-2.8 3.8-4 6-4 4 0 5.6 4 4 7.7C19.5 16.4 12 21 12 21z"/>
+    </symbol>
+    <symbol id="icon-home" viewBox="0 0 24 24">
+      <path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>
+    </symbol>
+    <symbol id="icon-chart" viewBox="0 0 24 24">
+      <path d="M4 20V10h4v10H4zm6 0V4h4v16h-4zm6 0v-7h4v7h-4z"/>
+    </symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24">
+      <path d="M6 10V8a6 6 0 1112 0v2h1a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V11a1 1 0 011-1zm2 0h8V8a4 4 0 00-8 0z"/>
+    </symbol>
+    <symbol id="icon-star" viewBox="0 0 24 24">
+      <path d="M12 2l3.1 6.6 7.2.9-5.3 5 1.5 7.2L12 18l-6.5 3.7 1.5-7.2-5.3-5 7.2-.9z"/>
+    </symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24">
+      <path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24">
+      <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-back" viewBox="0 0 24 24">
+      <path d="M15 4l-8 8 8 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="app">
+
+  <!-- ===== EKRAN: ŚCIEŻKA (HOME) ===== -->
+  <section id="screen-home" class="screen active">
+    <header class="topbar">
+      <div class="stat stat--flame"><svg class="ic"><use href="#icon-flame"/></svg><span id="stat-streak">0</span></div>
+      <div class="stat stat--gem"><svg class="ic"><use href="#icon-gem"/></svg><span id="stat-xp">0</span></div>
+      <div class="stat stat--heart"><svg class="ic"><use href="#icon-heart"/></svg><span id="stat-hearts">5</span></div>
+    </header>
+
+    <div class="chapter-card">
+      <div class="chapter-card__label">Rozdział 1</div>
+      <h1 class="chapter-card__title">Podstawy</h1>
+      <p class="chapter-card__subtitle">1430 najważniejszych słówek · 30 lekcji</p>
+      <div class="chapter-card__progress">
+        <div class="chapter-card__progress-bar"><div id="chapter-progress-fill" class="chapter-card__progress-fill"></div></div>
+        <span id="chapter-progress-text">0 / 30</span>
+      </div>
+    </div>
+
+    <div class="path-wrap">
+      <ol id="path-list" class="path"></ol>
+      <div class="path-end">
+        <div class="path-end__badge">Rozdział 2</div>
+        <p>Kolejna seria już wkrótce 🌱</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EKRAN: WPROWADZENIE DO LEKCJI ===== -->
+  <section id="screen-intro" class="screen">
+    <div class="intro">
+      <svg class="intro__pear"><use href="#icon-pear"/></svg>
+      <div class="intro__eyebrow" id="intro-eyebrow">Lekcja 1</div>
+      <h2 class="intro__title" id="intro-title">Liczby</h2>
+      <p class="intro__desc" id="intro-desc">Poznasz 20 słówek. Najpierw fiszki, potem krótki quiz.</p>
+      <button class="btn btn--primary btn--block" id="btn-start-lesson">Zaczynamy</button>
+      <button class="btn btn--ghost btn--block" id="btn-intro-back">Wróć do ścieżki</button>
+    </div>
+  </section>
+
+  <!-- ===== EKRAN: FISZKI ===== -->
+  <section id="screen-flash" class="screen">
+    <header class="subbar">
+      <button class="iconbtn" id="btn-flash-close"><svg class="ic"><use href="#icon-x"/></svg></button>
+      <div class="progressbar"><div id="flash-progress" class="progressbar__fill"></div></div>
+    </header>
+    <div class="flash-wrap">
+      <p class="flash-hint">Kliknij kartę, aby zobaczyć tłumaczenie</p>
+      <div class="flashcard" id="flashcard">
+        <div class="flashcard__inner" id="flashcard-inner">
+          <div class="flashcard__face flashcard__face--front">
+            <span class="flashcard__word" id="flash-en">word</span>
+          </div>
+          <div class="flashcard__face flashcard__face--back">
+            <span class="flashcard__word" id="flash-pl">słowo</span>
+          </div>
+        </div>
+      </div>
+      <div class="flash-actions">
+        <button class="btn btn--outline" id="btn-flash-prev">Wstecz</button>
+        <button class="btn btn--primary" id="btn-flash-next">Dalej</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EKRAN: QUIZ ===== -->
+  <section id="screen-quiz" class="screen">
+    <header class="subbar">
+      <button class="iconbtn" id="btn-quiz-close"><svg class="ic"><use href="#icon-x"/></svg></button>
+      <div class="progressbar"><div id="quiz-progress" class="progressbar__fill"></div></div>
+      <div class="quiz-hearts"><svg class="ic ic--heart"><use href="#icon-heart"/></svg><span id="quiz-hearts-count">5</span></div>
+    </header>
+    <div class="quiz-wrap">
+      <p class="quiz-question-label" id="quiz-direction">Przetłumacz słowo:</p>
+      <h2 class="quiz-question" id="quiz-question">word</h2>
+      <div class="quiz-options" id="quiz-options"></div>
+    </div>
+    <div class="quiz-footer" id="quiz-footer">
+      <button class="btn btn--primary btn--block" id="btn-quiz-check" disabled>Sprawdź</button>
+    </div>
+    <div class="feedback" id="quiz-feedback">
+      <div class="feedback__inner">
+        <svg class="feedback__icon" id="feedback-icon"><use href="#icon-check"/></svg>
+        <div class="feedback__text">
+          <strong id="feedback-title">Świetnie!</strong>
+          <span id="feedback-sub"></span>
+        </div>
+        <button class="btn btn--block feedback__btn" id="btn-feedback-continue">Dalej</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EKRAN: BRAK SERC ===== -->
+  <section id="screen-noheart" class="screen">
+    <div class="intro">
+      <svg class="intro__pear intro__pear--sad"><use href="#icon-pear"/></svg>
+      <h2 class="intro__title">Brak serc</h2>
+      <p class="intro__desc" id="noheart-desc">Serca odnawiają się z czasem. Wróć do nauki później albo poćwicz fiszki — nie kosztują serc.</p>
+      <button class="btn btn--primary btn--block" id="btn-noheart-flash">Powtórz fiszki</button>
+      <button class="btn btn--ghost btn--block" id="btn-noheart-back">Wróć do ścieżki</button>
+    </div>
+  </section>
+
+  <!-- ===== EKRAN: WYNIKI ===== -->
+  <section id="screen-results" class="screen">
+    <div class="results">
+      <svg class="results__pear"><use href="#icon-pear"/></svg>
+      <h2 class="results__title" id="results-title">Lekcja ukończona!</h2>
+      <div class="results__stars" id="results-stars">
+        <svg class="star"><use href="#icon-star"/></svg>
+        <svg class="star"><use href="#icon-star"/></svg>
+        <svg class="star"><use href="#icon-star"/></svg>
+      </div>
+      <div class="results__stats">
+        <div class="results__stat"><span class="results__stat-num" id="results-correct">0/0</span><span class="results__stat-label">poprawnych</span></div>
+        <div class="results__stat"><span class="results__stat-num" id="results-xp">+0</span><span class="results__stat-label">XP</span></div>
+      </div>
+      <button class="btn btn--primary btn--block" id="btn-results-continue">Kontynuuj</button>
+    </div>
+  </section>
+
+  <!-- ===== EKRAN: STATYSTYKI ===== -->
+  <section id="screen-profile" class="screen">
+    <header class="topbar topbar--simple"><h1>Twoje postępy</h1></header>
+    <div class="profile">
+      <div class="profile__grid">
+        <div class="profile__card">
+          <svg class="ic ic--big"><use href="#icon-flame"/></svg>
+          <span class="profile__num" id="profile-streak">0</span>
+          <span class="profile__label">dni serii</span>
+        </div>
+        <div class="profile__card">
+          <svg class="ic ic--big"><use href="#icon-gem"/></svg>
+          <span class="profile__num" id="profile-xp">0</span>
+          <span class="profile__label">punktów XP</span>
+        </div>
+        <div class="profile__card">
+          <svg class="ic ic--big"><use href="#icon-pear"/></svg>
+          <span class="profile__num" id="profile-words">0</span>
+          <span class="profile__label">słówek opanowanych</span>
+        </div>
+        <div class="profile__card">
+          <svg class="ic ic--big"><use href="#icon-star"/></svg>
+          <span class="profile__num" id="profile-lessons">0 / 30</span>
+          <span class="profile__label">lekcji ukończonych</span>
+        </div>
+      </div>
+      <button class="btn btn--outline btn--block" id="btn-reset">Zresetuj postęp</button>
+      <p class="profile__note">Rozdział 2 pojawi się w kolejnej aktualizacji.</p>
+    </div>
+  </section>
+
+  <!-- ===== DOLNA NAWIGACJA ===== -->
+  <nav class="tabbar" id="tabbar">
+    <button class="tabbar__btn is-active" data-tab="home"><svg class="ic"><use href="#icon-home"/></svg><span>Ścieżka</span></button>
+    <button class="tabbar__btn" data-tab="profile"><svg class="ic"><use href="#icon-chart"/></svg><span>Statystyki</span></button>
+  </nav>
+
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
