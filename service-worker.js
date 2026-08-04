@@ -1,4 +1,4 @@
-const CACHE_NAME = "gruszka-cache-v2";
+const CACHE_NAME = "gruszka-cache-v3";
 const ASSETS = [
   "./",
   "./index.html",

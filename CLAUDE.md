@@ -47,6 +47,10 @@ Kroki do wykonania w Claude Code, jeśli user o to poprosi:
 - Zachowaj klucz `gruszka_state_v1` w localStorage przy każdej zmianie app.js — inaczej user straci postęp.
 - **Przy każdej zmianie plików podbij `CACHE_NAME` w `service-worker.js`** — bez tego telefony
   z zainstalowaną appką mogą długo serwować starą wersję z cache.
+- **Nie usuwaj `<meta name="robots" content="noindex, nofollow">` z index.html.** User chce,
+  żeby appka była dostępna tylko z bezpośredniego linku, nie z wyszukiwarek. `robots.txt` tego
+  nie załatwi — strona stoi w podkatalogu `/gruszka-app/`, a wyszukiwarki czytają robots.txt
+  wyłącznie z korzenia domeny.
 - **Zmiana numeracji lekcji wymaga migracji.** W app.js jest `DATA_VERSION` i funkcja `migrate()`.
   Przy v1→v2 (podział 30 tematów na 101 porcji) postęp z tematu przepisywany jest na wszystkie
   jego porcje po polu `theme`. Jeśli znów zmienisz podział — podbij `DATA_VERSION` i dopisz kolejny krok.

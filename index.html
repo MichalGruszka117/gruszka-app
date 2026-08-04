@@ -6,6 +6,13 @@
 <title>Gruszka — Nauka Angielskiego</title>
 <meta name="description" content="Ucz się angielskiego w krótkich lekcjach i quizach.">
 
+<!-- Appka ma być dostępna tylko z bezpośredniego linku, nie z wyszukiwarek.
+     Uwaga: robots.txt nie zadziała w podkatalogu (/gruszka-app/) — wyszukiwarki
+     czytają go wyłącznie z korzenia domeny. Ten meta tag działa zawsze i jest
+     silniejszy: blokuje samo indeksowanie, a nie tylko odwiedzanie. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="googlebot" content="noindex, nofollow">
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#7CB518">
 <link rel="icon" href="icons/favicon.png">
